@@ -33,9 +33,9 @@ function startGame() {
   // One of the words from the array is randomly chosen
   chosenWord = words[Math.floor(Math.random() * words.length)];
   // chosenWord is then broken into the individual letters
-  lettersInWord = chosenWord.split("");
+  wordLetters = chosenWord.split("");
   // Count the number of letters in the chosen word
-  numBlanks = lettersInWord.length;
+  numBlanks = wordLetters.length;
 
   // Console log the chosen word to ensure it's being read
   console.log(chosenWord);
@@ -60,20 +60,62 @@ function startGame() {
 
 //Function to check the letters in the word
 function checkLetters(letter) {
-  var letInWord = false;
+  var letterInWord = false;
 
   // Check to see if the letter is in the word with loop
   for (var i = 0; i < numBlanks; i++) {
     if (chosenWord[i] === letter) {
-      letInWord = true;
+      letterInWord = true;
     }
   }
   // If the letter exsits in the word, find out exactly what index
-  if (letInWord) {
+  if (letterInWord) {
     for (j = 0; j < numBlanks; j++) {
       if (chosenWord[j] === letter) {
         mixedArr[j] = letter;
       }
     }
+    console.log(mixedArr);
+  } else {
+    wrongGuesses.push(letter);
+    numGuesses--;
   }
 }
+
+function roundComplete() {
+  console.log(
+    "Win Count: " +
+      winCounter +
+      "| Loss Counter: " +
+      lossCounter +
+      " | NumGuess: " +
+      numGuesses
+  );
+  document.getElementById("word-blanks").innerHTML = mixedArr.join(" ");
+  document.getElementById("guesses-left").innerHTML = numGuesses;
+  document.getElementById("wrong-guesses").innerHTML = wrongGuesses.join(" ");
+
+  if (wordLetters.toString() == mixedArr.toString()) {
+    winCounter++;
+    alert("You win!");
+    document.getElementById("win-counter").innerHTML = winCounter;
+    startGame();
+  } else if (numGuesses === 0) {
+    lossCounter++;
+    alert("You lose! Try again!");
+    document.getElementById("loss-counter").innerHTML = lossCounter;
+    startGame();
+  }
+}
+
+// MAIN PROCESS OF GAME
+startGame();
+
+// Capture user key presses
+document.onkeyup = function(event) {
+  if (event.keyCode >= 65 && event.keyCode <= 90) {
+    var letterGuessed = event.key.toLowerCase();
+    checkLetters(letterGuessed);
+    roundComplete();
+  }
+};
